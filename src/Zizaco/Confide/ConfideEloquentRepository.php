@@ -146,6 +146,11 @@ class ConfideEloquentRepository implements ConfideRepository
         return null;
     }
 
+	protected function getPasswordRemindersTable()
+	{
+		return $this->app['config']->get('auth.reminder.table');
+	}
+
     /**
      * Get password reminders count by the given token
      *
@@ -154,7 +159,7 @@ class ConfideEloquentRepository implements ConfideRepository
      */
     public function getPasswordRemindersCount( $token )
     {
-        $count = $this->app['db']->connection()->table('password_reminders')
+	$count = $this->app['db']->connection()->table($this->getPasswordRemindersTable())
             ->where('token','=',$token)->count();
 
         return $count;
@@ -168,7 +173,7 @@ class ConfideEloquentRepository implements ConfideRepository
      */
     public function getEmailByReminderToken( $token )
     {
-        $email = $this->app['db']->connection()->table('password_reminders')
+	$email = $this->app['db']->connection()->table($this->getPasswordRemindersTable())
             ->select('email')->where('token','=',$token)
             ->first();
 
@@ -192,7 +197,7 @@ class ConfideEloquentRepository implements ConfideRepository
      */
     public function deleteEmailByReminderToken( $token )
     {
-        $this->app['db']->connection()->table('password_reminders')
+	$this->app['db']->connection()->table($this->getPasswordRemindersTable())
             ->select('email')->where('token','=',$token)
             ->delete();
     }
@@ -236,7 +241,7 @@ class ConfideEloquentRepository implements ConfideRepository
             'created_at'=> new \DateTime
         );
 
-        $this->app['db']->connection()->table('password_reminders')
+	$this->app['db']->connection()->table($this->getPasswordRemindersTable())
             ->insert( $values );
         // I.E:
         //     DB::table('password_reminders')->insert(array(
